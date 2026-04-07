@@ -2,7 +2,7 @@ from itertools import islice
 import sys
 
 
-# TODO
+# computes a table of optimal values
 def hvlcs(a, b, values):
     m = len(a)
     n = len(b)
@@ -19,7 +19,26 @@ def hvlcs(a, b, values):
                 # o.w. recurse
                 table[i][j] = max(table[i - 1][j], table[i][j - 1])
 
-    return table[m][n]
+    return table, table[m][n]
+
+# compute the subsequence of max value
+def backtrack(table, a, b, values):
+    m = len(table) - 1
+    n = len(table[0]) - 1
+    res = []
+
+    i, j = m, n
+    while i > 0 and j > 0:
+        if a[i - 1] == b[j - 1] and table[i][j] == values[a[i - 1]] + table[i - 1][j - 1]:
+            res.append(a[i - 1])
+            i -= 1
+            j -= 1
+        elif table[i][j] == table[i - 1][j]:
+            i -= 1
+        else:
+            j -= 1
+
+    return "".join(reversed(res))
 
 # Usage: python hvlcs.py <input-file>
 def main():
@@ -44,12 +63,12 @@ def main():
         b = file.readline().strip()
 
     # invoke hvlcs()
-    max_val = hvlcs(a, b, values)
+    table, max_val = hvlcs(a, b, values)
     print(max_val)
 
-    # TODO: invoke backtrack()
-
-    # TODO: file write
+    # invoke backtrack()
+    c = backtrack(table, a, b, values)
+    print(c)
 
 if __name__ == "__main__":
     main()
