@@ -1,6 +1,24 @@
+import os
 from itertools import islice
 import sys
 
+
+# get values and strings a and b
+def parse(in_file):
+    with open("data/" + in_file, 'r') as file:
+        n = int(file.readline().strip())
+
+        # character values dict
+        values = {
+            line.split()[0]: int(line.split()[1])
+            for line in islice(file, n)
+        }
+
+        # input strings
+        a = file.readline().strip()
+        b = file.readline().strip()
+
+    return values, a, b
 
 # computes a table of optimal values
 def hvlcs(a, b, values):
@@ -43,24 +61,12 @@ def backtrack(table, a, b, values):
 # Usage: python hvlcs.py <input-file>
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python hvlcs.py <input-file>")
+        print("Usage: python src/hvlcs.py <input-file>")
         sys.exit(1)
 
     # parse input file
-    filename = sys.argv[1]
-
-    with open(filename, 'r') as file:
-        n = int(file.readline().strip())
-
-        # character values dict
-        values = {
-            line.split()[0]: int(line.split()[1])
-            for line in islice(file, n)
-        }
-
-        # input strings
-        a = file.readline().strip()
-        b = file.readline().strip()
+    in_file = sys.argv[1]
+    values, a, b = parse(in_file)
 
     # invoke hvlcs()
     table, max_val = hvlcs(a, b, values)
@@ -70,6 +76,11 @@ def main():
     c = backtrack(table, a, b, values)
     print(c)
 
+    # write out
+    out_file = "data/" + os.path.splitext(in_file)[0] + ".out"
+    with open(out_file, 'w') as file:
+        file.write(f"{max_val}\n{c}\n")
+
+
 if __name__ == "__main__":
     main()
-    sys.exit(0)
